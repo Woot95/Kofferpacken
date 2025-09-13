@@ -35,13 +35,19 @@ public class Round {
 
     private void makeGuess(){
         Scanner sc = new Scanner(System.in);
-        String itemToGuess;
         String itemPassedByPlayer;
         int itemIndex = 1;
+        boolean hasError = false;
 
-
-        while(!this.tempsuiteCase.isEmpty()){
+        String itemToGuess;
+        try {
             itemToGuess = this.tempsuiteCase.pop();
+        } catch (Exception e) {
+            itemToGuess = null;
+        }
+
+        while(itemToGuess != null){
+            hasError = false;
 
             System.out.printf("Welcher Gegenstand befindet sich an Position %d? \n", itemIndex);
             itemPassedByPlayer = sc.nextLine();
@@ -49,13 +55,29 @@ public class Round {
                 System.out.println("Korrekt!");
                 itemIndex++;
             }else{
-                System.out.println("Falsch! Bitte erneut versuchen");
                 this.parent.setFailure_amount(this.parent.getFailure_amount() - 1);
+                hasError = true;
+                if (this.parent.getFailure_amount() == 0){
+                    //game over
+                    itemToGuess = null;
+                }else{
+                    System.out.println("Falsch! Bitte erneut versuchen");
+                    System.out.printf("Es ist/sind noch %d Fehler erlaubt \n", this.parent.getFailure_amount() );
+                }
+            }
+
+            if(!hasError){
+                try {
+                    itemToGuess = this.tempsuiteCase.pop();
+                } catch (Exception e) {
+                    itemToGuess = null;
+                }
             }
         }
 
         if (this.parent.getFailure_amount() > 1){
             this.addItemToSuiteCase();
+            System.out.println("Runde vorbei!");
         }
     }
 
