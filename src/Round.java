@@ -13,23 +13,35 @@ public class Round {
         this.startRound();
     }
 
+    private Game getGame(){
+        return this.parent;
+    }
+
+    private void setTempsuiteCase(LinkedList<String> tempsuiteCase){
+        this.tempsuiteCase = new LinkedList<>();
+        this.tempsuiteCase.addAll(tempsuiteCase);
+    }
+
+    private LinkedList<String> getTempsuiteCase(){
+        return this.tempsuiteCase;
+    }
+
     public LinkedList<String> getSuitecaseContentFromParent(){
-        return this.parent.getSuitecase();
+        return getGame().getSuitecase();
     }
 
     private void startRound(){
         System.out.println("Neue Runde gestartet!");
-        this.tempsuiteCase = new LinkedList<>();
-        this.tempsuiteCase.addAll(getSuitecaseContentFromParent())  ;
-        this.runRound();
+        setTempsuiteCase(getSuitecaseContentFromParent());
+        runRound();
     }
 
     private void runRound(){
         //first round
-        if (this.tempsuiteCase.isEmpty() ){
-            this.addItemToSuiteCase();
+        if (getTempsuiteCase().isEmpty() ){
+            addItemToSuiteCase();
         }else{
-            this.makeGuess();
+            makeGuess();
         }
     }
 
@@ -41,7 +53,7 @@ public class Round {
 
         String itemToGuess;
         try {
-            itemToGuess = this.tempsuiteCase.pop();
+            itemToGuess = getTempsuiteCase().pop();
         } catch (Exception e) {
             itemToGuess = null;
         }
@@ -55,27 +67,27 @@ public class Round {
                 System.out.println("Korrekt!");
                 itemIndex++;
             }else{
-                this.parent.setFailure_amount(this.parent.getFailure_amount() - 1);
+                getGame().setFailure_amount(getGame().getFailure_amount() - 1);
                 hasError = true;
-                if (this.parent.getFailure_amount() == 0){
+                if (getGame().getFailure_amount() == 0){
                     //game over
                     itemToGuess = null;
                 }else{
                     System.out.println("Falsch! Bitte erneut versuchen");
-                    System.out.printf("Es ist/sind noch %d Fehler erlaubt \n", this.parent.getFailure_amount() );
+                    System.out.printf("Es ist/sind noch %d Fehler erlaubt \n", getGame().getFailure_amount() );
                 }
             }
 
             if(!hasError){
                 try {
-                    itemToGuess = this.tempsuiteCase.pop();
+                    itemToGuess = getTempsuiteCase().pop();
                 } catch (Exception e) {
                     itemToGuess = null;
                 }
             }
         }
 
-        if (this.parent.getFailure_amount() > 1){
+        if (getGame().getFailure_amount() > 0){
             this.addItemToSuiteCase();
             System.out.println("Runde vorbei!");
         }
@@ -85,7 +97,7 @@ public class Round {
         Scanner sc = new Scanner(System.in);
 
         System.out.println("Welcher Gegenstand soll in den Koffer gepackt werden?");
-        this.parent.getSuitecase().add(sc.nextLine());
+        getGame().getSuitecase().add(sc.nextLine());
 
     }
 
